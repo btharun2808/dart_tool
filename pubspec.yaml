@@ -1,4 +1,4 @@
-name: measure_mate
+name: DART_Tool
 description: A focused metric and imperial unit conversion app.
 publish_to: 'none'
 version: 1.0.0+1
