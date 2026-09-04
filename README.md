@@ -1,4 +1,4 @@
-# Measure Mate
+  # Dart tool
 
 Measure Mate is a Flutter conversion app for common distance and weight units. It supports metric and imperial conversions, instant recalculation, and swapping the source and destination units.
 
