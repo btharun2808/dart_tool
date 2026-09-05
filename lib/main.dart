@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
+  // Start the app.
   runApp(const MeasureMateApp());
 }
 
@@ -47,6 +48,7 @@ class _ConverterPageState extends State<ConverterPage> {
   String _toUnit = 'Kilometers';
   double _result = 1.60934;
 
+  // Keep the choices together for each type of measurement.
   static const _lengthUnits = ['Miles', 'Kilometers', 'Feet', 'Meters'];
   static const _weightUnits = ['Pounds', 'Kilograms', 'Ounces', 'Grams'];
 
@@ -105,6 +107,7 @@ class _ConverterPageState extends State<ConverterPage> {
   }
 
   void _convert() {
+    // Convert to a common unit before converting to the selected unit.
     final value = double.tryParse(_valueController.text) ?? 0;
     final baseValue = _toBaseUnit(value, _fromUnit);
     _result = _fromBaseUnit(baseValue, _toUnit);
