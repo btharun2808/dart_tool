@@ -14,25 +14,15 @@ class MeasureMateApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0A7C78),
-          brightness: Brightness.light,
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF4F7F5),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4285E5)),
+        scaffoldBackgroundColor: Colors.white,
         inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide.none,
+          border: const UnderlineInputBorder(),
+          enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFFE0E0E0)),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Color(0xFFD7E3DF)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Color(0xFF0A7C78), width: 2),
+          focusedBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF4285E5), width: 2),
           ),
         ),
       ),
@@ -119,97 +109,75 @@ class _ConverterPageState extends State<ConverterPage> {
     _result = _fromBaseUnit(baseValue, _toUnit);
   }
 
-  void _swapUnits() {
-    setState(() {
-      final previousFrom = _fromUnit;
-      _fromUnit = _toUnit;
-      _toUnit = previousFrom;
-      _convert();
-    });
-  }
-
   String _formatResult() => _result.abs() < 0.000001
       ? '0'
       : _result.toStringAsFixed(4).replaceFirst(RegExp(r'\.?0+$'), '');
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Measure Mate', style: TextStyle(fontWeight: FontWeight.w700)),
-        centerTitle: false,
-        backgroundColor: Colors.transparent,
-        actions: [
-          IconButton(
-            tooltip: 'About Measure Mate',
-            onPressed: () => showAboutDialog(
-              context: context,
-              applicationName: 'Measure Mate',
-              applicationVersion: '1.0.0',
-              children: const [Text('A simple metric and imperial unit converter.')],
-            ),
-            icon: const Icon(Icons.info_outline),
+        title: const Text('Measures Converter', style: TextStyle(fontSize: 16)),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF4285E5),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Row(
+            children: [
+              _tabButton('Distance', MeasureType.length),
+              _tabButton('Weight', MeasureType.weight),
+            ],
           ),
-          const SizedBox(width: 8),
-        ],
+        ),
       ),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-          children: [
-            Text('Convert with confidence', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w800)),
-            const SizedBox(height: 8),
-            Text('Quick, clear conversions for everyday measurements.', style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 16)),
-            const SizedBox(height: 28),
-            SegmentedButton<MeasureType>(
-              segments: const [
-                ButtonSegment(value: MeasureType.length, label: Text('Distance'), icon: Icon(Icons.route)),
-                ButtonSegment(value: MeasureType.weight, label: Text('Weight'), icon: Icon(Icons.monitor_weight_outlined)),
-              ],
-              selected: {_measureType},
-              onSelectionChanged: (selection) => _changeMeasure(selection.first),
-            ),
-            const SizedBox(height: 24),
-            Card(
-              elevation: 0,
-              color: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('FROM', style: TextStyle(color: colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: _valueController,
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onChanged: (_) => setState(_convert),
-                    decoration: const InputDecoration(labelText: 'Enter a value', prefixIcon: Icon(Icons.edit_outlined)),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(28, 8, 28, 32),
+              shrinkWrap: true,
+              children: [
+                const Center(child: Text('Value', style: TextStyle(color: Colors.grey))),
+                TextField(
+                  controller: _valueController,
+                  textAlign: TextAlign.left,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  onChanged: (_) => setState(_convert),
+                  decoration: const InputDecoration(isDense: true),
+                ),
+                const SizedBox(height: 18),
+                const Center(child: Text('From', style: TextStyle(color: Colors.grey))),
+                _unitDropdown(_fromUnit, (value) => setState(() { _fromUnit = value!; _convert(); })),
+                const SizedBox(height: 18),
+                const Center(child: Text('To', style: TextStyle(color: Colors.grey))),
+                _unitDropdown(_toUnit, (value) => setState(() { _toUnit = value!; _convert(); })),
+                const SizedBox(height: 18),
+                Center(
+                  child: FilledButton(
+                    onPressed: () => setState(_convert),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFFE7E7E7),
+                      foregroundColor: const Color(0xFF3568B5),
+                      elevation: 0,
+                      shape: const RoundedRectangleBorder(),
+                    ),
+                    child: const Text('Convert'),
                   ),
-                  const SizedBox(height: 14),
-                  _unitDropdown(_fromUnit, (value) => setState(() { _fromUnit = value!; _convert(); })),
-                  const SizedBox(height: 16),
-                  Center(child: IconButton.filledTonal(onPressed: _swapUnits, tooltip: 'Swap units', icon: const Icon(Icons.swap_vert, size: 24))),
-                  const SizedBox(height: 16),
-                  Text('TO', style: TextStyle(color: colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
-                  const SizedBox(height: 10),
-                  _unitDropdown(_toUnit, (value) => setState(() { _toUnit = value!; _convert(); })),
-                ]),
-              ),
+                ),
+                const SizedBox(height: 16),
+                Center(
+                  child: Text(
+                    '${_valueController.text} $_fromUnit are ${_formatResult()} $_toUnit',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.grey, fontSize: 15),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(color: colorScheme.primary, borderRadius: BorderRadius.circular(20)),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('RESULT', style: TextStyle(color: colorScheme.onPrimary.withValues(alpha: .75), fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 1.2)),
-                const SizedBox(height: 10),
-                Text('${_formatResult()} $_toUnit', style: TextStyle(color: colorScheme.onPrimary, fontSize: 30, fontWeight: FontWeight.w800)),
-                const SizedBox(height: 8),
-                Text('Conversion updated instantly', style: TextStyle(color: colorScheme.onPrimary.withValues(alpha: .8))),
-              ]),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -218,9 +186,26 @@ class _ConverterPageState extends State<ConverterPage> {
   Widget _unitDropdown(String value, ValueChanged<String?> onChanged) {
     return DropdownButtonFormField<String>(
       initialValue: value,
-      decoration: const InputDecoration(labelText: 'Unit'),
+      decoration: const InputDecoration(isDense: true),
       items: _units.map((unit) => DropdownMenuItem(value: unit, child: Text(unit))).toList(),
       onChanged: onChanged,
+    );
+  }
+
+  Widget _tabButton(String label, MeasureType type) {
+    final isSelected = _measureType == type;
+    return Expanded(
+      child: InkWell(
+        onTap: () => _changeMeasure(type),
+        child: Container(
+          height: 48,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: isSelected ? Colors.white : Colors.transparent, width: 3)),
+          ),
+          child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        ),
+      ),
     );
   }
 }
