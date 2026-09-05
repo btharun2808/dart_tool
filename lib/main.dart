@@ -62,6 +62,7 @@ class _ConverterPageState extends State<ConverterPage> {
   }
 
   void _changeMeasure(MeasureType type) {
+    // Reset the units when the measurement type changes.
     setState(() {
       _measureType = type;
       final units = type == MeasureType.length ? _lengthUnits : _weightUnits;
@@ -202,6 +203,7 @@ class _ConverterPageState extends State<ConverterPage> {
   }
 
   Widget _unitDropdown(String value, ValueChanged<String?> onChanged) {
+    // Use the same dropdown layout for both unit fields.
     return DropdownButtonFormField<String>(
       initialValue: value,
       decoration: const InputDecoration(isDense: true),
@@ -213,6 +215,7 @@ class _ConverterPageState extends State<ConverterPage> {
   }
 
   Widget _tabButton(String label, MeasureType type) {
+    // Show which measurement type is currently selected.
     final isSelected = _measureType == type;
     return Expanded(
       child: InkWell(
