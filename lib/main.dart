@@ -70,6 +70,7 @@ class _ConverterPageState extends State<ConverterPage> {
   }
 
   double _toBaseUnit(double value, String unit) {
+    // Convert through meters or kilograms so every unit pair uses one path.
     if (_measureType == MeasureType.length) {
       return switch (unit) {
         'Miles' => value * 1609.344,
@@ -140,20 +141,34 @@ class _ConverterPageState extends State<ConverterPage> {
               padding: const EdgeInsets.fromLTRB(28, 8, 28, 32),
               shrinkWrap: true,
               children: [
-                const Center(child: Text('Value', style: TextStyle(color: Colors.grey))),
+                const Center(
+                    child: Text('Value', style: TextStyle(color: Colors.grey))),
                 TextField(
                   controller: _valueController,
                   textAlign: TextAlign.left,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   onChanged: (_) => setState(_convert),
                   decoration: const InputDecoration(isDense: true),
                 ),
                 const SizedBox(height: 18),
-                const Center(child: Text('From', style: TextStyle(color: Colors.grey))),
-                _unitDropdown(_fromUnit, (value) => setState(() { _fromUnit = value!; _convert(); })),
+                const Center(
+                    child: Text('From', style: TextStyle(color: Colors.grey))),
+                _unitDropdown(
+                    _fromUnit,
+                    (value) => setState(() {
+                          _fromUnit = value!;
+                          _convert();
+                        })),
                 const SizedBox(height: 18),
-                const Center(child: Text('To', style: TextStyle(color: Colors.grey))),
-                _unitDropdown(_toUnit, (value) => setState(() { _toUnit = value!; _convert(); })),
+                const Center(
+                    child: Text('To', style: TextStyle(color: Colors.grey))),
+                _unitDropdown(
+                    _toUnit,
+                    (value) => setState(() {
+                          _toUnit = value!;
+                          _convert();
+                        })),
                 const SizedBox(height: 18),
                 Center(
                   child: FilledButton(
@@ -187,7 +202,9 @@ class _ConverterPageState extends State<ConverterPage> {
     return DropdownButtonFormField<String>(
       initialValue: value,
       decoration: const InputDecoration(isDense: true),
-      items: _units.map((unit) => DropdownMenuItem(value: unit, child: Text(unit))).toList(),
+      items: _units
+          .map((unit) => DropdownMenuItem(value: unit, child: Text(unit)))
+          .toList(),
       onChanged: onChanged,
     );
   }
@@ -201,9 +218,14 @@ class _ConverterPageState extends State<ConverterPage> {
           height: 48,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: isSelected ? Colors.white : Colors.transparent, width: 3)),
+            border: Border(
+                bottom: BorderSide(
+                    color: isSelected ? Colors.white : Colors.transparent,
+                    width: 3)),
           ),
-          child: Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+          child: Text(label,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w600)),
         ),
       ),
     );
