@@ -42,6 +42,7 @@ class ConverterPage extends StatefulWidget {
 }
 
 class _ConverterPageState extends State<ConverterPage> {
+  // The controller keeps the number shown in the input field.
   final _valueController = TextEditingController(text: '1');
   MeasureType _measureType = MeasureType.length;
   String _fromUnit = 'Miles';
@@ -57,6 +58,7 @@ class _ConverterPageState extends State<ConverterPage> {
 
   @override
   void dispose() {
+    // Controllers should be released when the screen is removed.
     _valueController.dispose();
     super.dispose();
   }
@@ -91,6 +93,7 @@ class _ConverterPageState extends State<ConverterPage> {
   }
 
   double _fromBaseUnit(double value, String unit) {
+    // Convert the shared value into the unit selected by the user.
     if (_measureType == MeasureType.length) {
       return switch (unit) {
         'Miles' => value / 1609.344,
@@ -116,6 +119,7 @@ class _ConverterPageState extends State<ConverterPage> {
 
   String _formatResult() => _result.abs() < 0.000001
       ? '0'
+      // Limit the result to four decimal places for easier reading.
       : _result.toStringAsFixed(4).replaceFirst(RegExp(r'\.?0+$'), '');
 
   @override
@@ -140,6 +144,7 @@ class _ConverterPageState extends State<ConverterPage> {
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
+            // Keep the form readable on wider browser windows.
             constraints: const BoxConstraints(maxWidth: 420),
             child: ListView(
               padding: const EdgeInsets.fromLTRB(28, 8, 28, 32),
@@ -152,6 +157,7 @@ class _ConverterPageState extends State<ConverterPage> {
                   textAlign: TextAlign.left,
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
+                  // Recalculate while the user types a new value.
                   onChanged: (_) => setState(_convert),
                   decoration: const InputDecoration(isDense: true),
                 ),
@@ -210,6 +216,7 @@ class _ConverterPageState extends State<ConverterPage> {
       items: _units
           .map((unit) => DropdownMenuItem(value: unit, child: Text(unit)))
           .toList(),
+      // The callback updates the selected source or destination unit.
       onChanged: onChanged,
     );
   }
